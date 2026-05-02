@@ -7,7 +7,6 @@ scaler_young = joblib.load("artifacts/scaler_young.joblib")
 scaler_rest = joblib.load("artifacts/scaler_rest.joblib")
 
 
-
 def calculate_normalized_risk(medical_history):
     risk_scores = {
         "diabetes": 6,
@@ -21,13 +20,12 @@ def calculate_normalized_risk(medical_history):
     diseases = medical_history.lower().split(" & ")
     total_risk_score = sum(risk_scores.get(disease.strip(), 0) for disease in diseases)
 
-    max_score = 14
-    min_score = 0
-
-    return (total_risk_score - min_score) / (max_score - min_score)
+    return total_risk_score / 14
 
 
 def preprocess_input(input_dict):
+
+
     expected_columns = [
         'age', 'number_of_dependants', 'income_lakhs', 'insurance_plan',
         'genetical_risk', 'normalized_risk_score',
@@ -93,9 +91,7 @@ def preprocess_input(input_dict):
         elif key == "Genetical Risk":
             df['genetical_risk'] = value
 
-
     df['normalized_risk_score'] = calculate_normalized_risk(input_dict['Medical History'])
-
 
     df = handle_scaling(input_dict['Age'], df)
 
@@ -104,18 +100,19 @@ def preprocess_input(input_dict):
 
 def handle_scaling(age, df):
 
-    if age <= 25:
-        scaler_object = scaler_young
-    else:
-        scaler_object = scaler_rest
+    scaler_object = scaler_young if age <= 25 else scaler_rest
 
     cols_to_scale = scaler_object['cols_to_scale']
     scaler = scaler_object['scaler']
 
+    missing_cols = [col for col in cols_to_scale if col not in df.columns]
+
+    if missing_cols:
+        raise ValueError(f"Missing columns for scaling: {missing_cols}")
+
     df[cols_to_scale] = scaler.transform(df[cols_to_scale])
 
     return df
-
 
 
 def predict(input_dict):
