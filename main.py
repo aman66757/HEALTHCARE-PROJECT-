@@ -1,10 +1,10 @@
 import streamlit as st
 from prediction_helper import predict
 
-# Page config
+
 st.set_page_config(page_title="Insurance Predictor", layout="wide")
 
-# Custom CSS
+
 st.markdown("""
     <style>
         .main {
@@ -24,11 +24,11 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Title
+
 st.markdown("<h1 style='text-align: center;'>💊 Health Insurance Cost Predictor</h1>", unsafe_allow_html=True)
 st.markdown("---")
 
-# Sidebar (better UX)
+
 st.sidebar.header("ℹ️ Instructions")
 st.sidebar.write("Fill all details and click Predict")
 
@@ -47,7 +47,7 @@ categorical_options = {
     'Insurance Plan': ['Bronze', 'Silver', 'Gold']
 }
 
-# Section 1: Basic Info
+
 st.subheader("👤 Personal Details")
 col1, col2, col3 = st.columns(3)
 
@@ -58,7 +58,7 @@ with col2:
 with col3:
     income_lakhs = st.number_input('Income (Lakhs)', 0, 200)
 
-# Section 2: Risk & Plan
+
 st.subheader("📊 Risk & Plan")
 col4, col5, col6 = st.columns(3)
 
@@ -69,7 +69,7 @@ with col5:
 with col6:
     employment_status = st.selectbox('Employment Status', categorical_options['Employment Status'])
 
-# Section 3: Lifestyle
+
 st.subheader("🏃 Lifestyle")
 col7, col8, col9 = st.columns(3)
 
@@ -80,7 +80,6 @@ with col8:
 with col9:
     bmi_category = st.selectbox('BMI Category', categorical_options['BMI Category'])
 
-# Section 4: Health
 st.subheader("🏥 Health Details")
 col10, col11, col12 = st.columns(3)
 
@@ -91,28 +90,33 @@ with col11:
 with col12:
     medical_history = st.selectbox('Medical History', categorical_options['Medical History'])
 
-# Input dictionary
+
 input_dict = {
-    'Age': age,
-    'Number of Dependants': number_of_dependants,
-    'Income in Lakhs': income_lakhs,
-    'Genetical Risk': genetical_risk,
-    'Insurance Plan': insurance_plan,
-    'Employment Status': employment_status,
-    'Gender': gender,
-    'Marital Status': marital_status,
-    'BMI Category': bmi_category,
-    'Smoking Status': smoking_status,
-    'Region': region,
-    'Medical History': medical_history
+    'age': age,
+    'number_of_dependants': number_of_dependants,
+    'income_lakhs': income_lakhs,
+    'genetical_risk': genetical_risk,
+    'insurance_plan': insurance_plan,
+    'employment_status': employment_status,
+    'gender': gender,
+    'marital_status': marital_status,
+    'bmi_category': bmi_category,
+    'smoking_status': smoking_status,
+    'region': region,
+    'medical_history': medical_history
 }
 
 st.markdown("---")
 
-# Predict button centered
+# Predict button
 col_btn1, col_btn2, col_btn3 = st.columns([1,2,1])
 
 with col_btn2:
     if st.button('🚀 Predict Insurance Cost'):
-        prediction = predict(input_dict)
-        st.success(f'💰 Estimated Cost: ₹ {prediction}')
+        try:
+            prediction = predict(input_dict)
+            st.success(f'💰 Estimated Cost: ₹ {round(prediction, 2)}')
+        except Exception as e:
+            st.error(f"Error: {e}")
+
+st.write("NEW VERSION 003")
